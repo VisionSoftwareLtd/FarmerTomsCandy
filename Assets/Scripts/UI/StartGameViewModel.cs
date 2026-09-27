@@ -56,6 +56,7 @@ namespace Blocks.Sessions.Common
 
         public void StartGame()
         {
+            GameManager.Instance.SetPlayerName(m_Session.CurrentPlayer.GetPlayerName());
             GameManager.Instance.HideSessionDocument();
         }
 

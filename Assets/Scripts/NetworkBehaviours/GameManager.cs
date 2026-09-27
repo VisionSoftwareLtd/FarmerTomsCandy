@@ -1,3 +1,4 @@
+using System;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -18,10 +19,12 @@ public class GameManager : NetworkBehaviour
     Children
   }
 
-  private NetworkVariable<int> numCandies = new NetworkVariable<int>(0);
+  private NetworkVariable<int> numCandies = new NetworkVariable<int>(20);
   [SerializeField] private UIDocument sessionDocument;
   [SerializeField] private Transform[] startingPositions;
   [SerializeField] private CinemachineCamera cinemachineCamera;
+  private int localNumCandies;
+  private Player localPlayer;
 
   public override void OnNetworkSpawn()
   {
@@ -37,28 +40,37 @@ public class GameManager : NetworkBehaviour
 
   private void Start()
   {
+    localNumCandies = numCandies.Value;
+    UI.Instance.UpdateCandyCount(localNumCandies);
     cinemachineCamera.gameObject.SetActive(false);
     Camera.main.transform.position = startingPositions[(int)StartingPosition.Camera].position;
   }
 
   private void OnNumCandiesChanged(int oldValue, int newValue)
   {
-    Debug.Log($"Number of candies changed from {oldValue} to {newValue}.");
+    localNumCandies = newValue;
+    UI.Instance.UpdateCandyCount(newValue);
   }
 
   [Rpc(SendTo.Server)]
-  public void AddCandyServerRpc()
+  public void SubtractCandyServerRpc()
   {
-    numCandies.Value++;
+    if (numCandies.Value > 0)
+    {
+      numCandies.Value--;
+    }
   }
 
   public void HideSessionDocument()
   {
     sessionDocument.gameObject.SetActive(false);
+    UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+    UnityEngine.Cursor.visible = false;
   }
 
-  internal Vector3 ActivatePlayer(StartingPosition startingPosition, Transform trackingTarget)
+  internal Vector3 ActivatePlayer(StartingPosition startingPosition, Player targetPlayer)
   {
+    localPlayer = targetPlayer;
     Vector3 startingPositionVector = Vector3.zero;
     switch (startingPosition)
     {
@@ -69,8 +81,41 @@ public class GameManager : NetworkBehaviour
         startingPositionVector = startingPositions[(int)StartingPosition.Children].position;
         break;
     }
-    cinemachineCamera.Follow = trackingTarget;
+    cinemachineCamera.Follow = targetPlayer.transform;
     cinemachineCamera.gameObject.SetActive(true);
     return startingPositionVector;
+  }
+
+  internal void OnChildGotCandy(Player parent)
+  {
+    if (numCandies.Value > 0)
+    {
+      SubtractCandyServerRpc();
+    }
+  }
+
+  internal void SetPlayerName(string playerName)
+  {
+    if (localPlayer != null)
+    {
+      if (playerName.IndexOf('#') != -1)
+      {
+        playerName = playerName.Substring(0, playerName.IndexOf('#'));
+      }
+      localPlayer.SetPlayerName(playerName);
+      localPlayer.EnableMovement();
+    }
+  }
+
+  internal void WinGame()
+  {
+    StopMovementRpc();
+  }
+
+  [Rpc(SendTo.Everyone)]
+  private void StopMovementRpc()
+  {
+    UI.Instance.ShowWinScreen(numCandies.Value);
+    localPlayer.EndGame();
   }
 }
