@@ -44,6 +44,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57ccb190615a0a341999ec239db518f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClips: []
-  musicClips: []
+  audioClips:
+  - {fileID: 8300000, guid: 0cd7d71fa3828344d96a3615551a6524, type: 3}
+  - {fileID: 8300000, guid: a44c2a064e83bfb4c9d3289a26f2cc1c, type: 3}
+  - {fileID: 8300000, guid: d0d809aa8ba36884a8039fb692fac89e, type: 3}
+  - {fileID: 8300000, guid: 28fce01397914044fbf0f86aad50ba98, type: 3}
+  - {fileID: 8300000, guid: c8881433123d3bf49ba0ebe32ce0949f, type: 3}
+  - {fileID: 8300000, guid: 40dc5a2a8ceb9f44ba2499c7edae8b32, type: 3}
+  - {fileID: 8300000, guid: f2e7bb8742f4842419a4614542b5ea5a, type: 3}
+  musicClips:
+  - {fileID: 8300000, guid: be44d52115ffbe642a4445575761a8b5, type: 3}
+  - {fileID: 8300000, guid: 38ea8248062546a41a13870214a0cd46, type: 3}
+  - {fileID: 8300000, guid: bdcd77dd34be703418adc860fd2f6454, type: 3}
   numAudioSources: 10
+  soundVarieties:
+  - name: Jump
+    varietyCount: 5

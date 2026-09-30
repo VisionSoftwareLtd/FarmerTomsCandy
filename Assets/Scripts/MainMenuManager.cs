@@ -7,7 +7,7 @@ public class MainMenuManager : MonoBehaviour
     IEnumerator Start()
     {
         yield return null;
-        SoundManager.instance.PlayMusic("MainMenu");
+        SoundManager.Instance.PlayMusic("MenuIntro", true, 0.3f);
     }
 
     public void OnClickStart()

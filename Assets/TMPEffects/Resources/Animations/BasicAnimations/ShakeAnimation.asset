@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: ShakeAnimation
   m_EditorClassIdentifier: 
   uniform: 0
-  maxXAmplitude: 5
-  minXAmplitude: 5
-  maxYAmplitude: 5
-  minYAmplitude: 5
-  uniformDelay: 1
-  minDelay: 0.1
-  maxDelay: 0.1
+  maxXAmplitude: 3
+  minXAmplitude: 3
+  maxYAmplitude: 3
+  minYAmplitude: 3
+  uniformWait: 1
+  minWait: 0.1
+  maxWait: 0.1

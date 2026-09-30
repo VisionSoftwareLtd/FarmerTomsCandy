@@ -88,6 +88,7 @@ public class Player : NetworkBehaviour
     if (characterController.isGrounded && inputJump.WasPressedThisFrame() && isFarmer)
     {
       verticalVelocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.gravity.y);
+      SoundManager.Instance.PlaySoundRandomPitch("Jump", 0.6f);
     }
 
     verticalVelocity.y += Physics.gravity.y * Time.deltaTime;

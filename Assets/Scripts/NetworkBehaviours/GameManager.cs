@@ -1,7 +1,8 @@
-using System;
+using System.Collections;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class GameManager : NetworkBehaviour
@@ -38,12 +39,14 @@ public class GameManager : NetworkBehaviour
     numCandies.OnValueChanged -= OnNumCandiesChanged;
   }
 
-  private void Start()
+  private IEnumerator Start()
   {
     localNumCandies = numCandies.Value;
     UI.Instance.UpdateCandyCount(localNumCandies);
     cinemachineCamera.gameObject.SetActive(false);
     Camera.main.transform.position = startingPositions[(int)StartingPosition.Camera].position;
+    yield return null;
+    SoundManager.Instance.StopMusic();
   }
 
   private void OnNumCandiesChanged(int oldValue, int newValue)
@@ -57,8 +60,15 @@ public class GameManager : NetworkBehaviour
   {
     if (numCandies.Value > 0)
     {
+      SoundManager.Instance.PlaySoundRandomPitch("Eat");
       numCandies.Value--;
     }
+  }
+
+  [Rpc(SendTo.Everyone)]
+  private void PlayerJoinedRpc()
+  {
+    SoundManager.Instance.PlaySound("Spawn", 0.8f);
   }
 
   public void HideSessionDocument()
@@ -79,6 +89,7 @@ public class GameManager : NetworkBehaviour
         break;
       case StartingPosition.Children:
         startingPositionVector = startingPositions[(int)StartingPosition.Children].position;
+        startingPositionVector += new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-0.2f, 0.2f));
         break;
     }
     cinemachineCamera.Follow = targetPlayer.transform;
@@ -104,6 +115,8 @@ public class GameManager : NetworkBehaviour
       }
       localPlayer.SetPlayerName(playerName);
       localPlayer.EnableMovement();
+      PlayerJoinedRpc();
+      SoundManager.Instance.PlayMusic("Game", true, 0.3f);
     }
   }
 
@@ -117,5 +130,13 @@ public class GameManager : NetworkBehaviour
   {
     UI.Instance.ShowWinScreen(numCandies.Value);
     localPlayer.EndGame();
+    SoundManager.Instance.PlayMusic("GameEnd", true, 0.3f);
+    UnityEngine.Cursor.lockState = CursorLockMode.None;
+    UnityEngine.Cursor.visible = true;
+  }
+
+  public void OnClickMainMenu()
+  {
+    SceneManager.LoadScene("MainMenu");
   }
 }

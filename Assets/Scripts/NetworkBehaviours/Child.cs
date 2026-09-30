@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Child : MonoBehaviour
 {
+  [SerializeField] private float childMoveSpeed = 8f;
   private Player parent;
   private Animator animator;
 
@@ -13,7 +14,7 @@ public class Child : MonoBehaviour
 
   private void Start()
   {
-    parent.Speed = 6f;
+    parent.Speed = childMoveSpeed;
   }
 
   public void UpdateAnimator(bool isMoving)
